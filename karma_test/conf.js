@@ -31,7 +31,18 @@ module.exports = function(config) {
         },
 
         jsonFixturesPreprocessor: {
-            camelizeFilenames: true
+            // camelize fixture filenames (e.g 'fixtures/aa-bb_cc.json' becames __fixtures__['fixtures/aaBbCc'])
+            camelizeFilenames: true,
+            // strip this from the file path \ fixture name
+            stripPrefix: 'fixtures/',
+            // strip this to the file path \ fixture name
+            prependPrefix: 'prefix/',
+            // change the global fixtures variable name
+            variableName: '__mocks__',
+            // transform the filename
+            transformPath: function(path) {
+                return path + '.js';
+            }
         },
 
         // test results reporter to use
