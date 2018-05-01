@@ -45,7 +45,7 @@ module.exports = (function () {
             fixtureName = prependPrefix + fixtureName.replace(stripPrefix, '');
 
             // transform file path
-            file.path = transformPath(file.path);
+            fixtureName = transformPath(fixtureName);
 
             done(util.format(template, fixtureName, content));
         };
