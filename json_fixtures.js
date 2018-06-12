@@ -21,14 +21,20 @@ module.exports = (function () {
     function createJsonFixturesPreprocessor(basePath, config) {
         config = typeof config === 'object' ? config : {};
 
-        var stripPrefix = new RegExp('^' + (config.stripPrefix || '')),
-            prependPrefix = config.prependPrefix || '';
+        var stripPrefix = config.stripPrefix || function(filepath) {
+            return '';
+        };
+
+        var prependPrefix = config.prependPrefix || function(filepath) {
+            return '';
+        };
 
         var transformPath = config.transformPath || function(filepath) {
-                return filepath.replace(/\.json$/, '.js');
-            };
+            return filepath.replace(/\.json$/, '.js');
+        };
 
         return function (content, file, done) {
+
             var fixtureName = file.originalPath
                 .replace(basePath + '/', '')
                 .replace(/\.json$/, '');
@@ -42,7 +48,9 @@ module.exports = (function () {
             }
 
             // Update the fixture name
-            fixtureName = prependPrefix + fixtureName.replace(stripPrefix, '');
+            var valueToStrip = typeof stripPrefix === 'function' ? new RegExp('^' + stripPrefix(file.path)) : new RegExp('^' + stripPrefix);
+            var valueToPrepend = typeof prependPrefix === 'function' ? prependPrefix(file.path) : prependPrefix;
+            fixtureName = valueToPrepend + fixtureName.replace(valueToStrip, '');
 
             // transform file path
             file.path = transformPath(file.path);
